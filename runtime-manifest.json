@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "buildId": "korona-4f8270e2aec2ea83",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 371,
+      "sha256": "ELdRMFUSxnKdb2vT6s7aXNM0rxmn7dlD2r03GW68wz8="
+    },
+    {
+      "path": "README.md",
+      "bytes": 281,
+      "sha256": "QU/rtcNnlPleJO0SaM2oCI0xlZgY3hbBalLXmZn52OQ="
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 492,
+      "sha256": "V4wEjY7HLf+UqTYioOFODRAEkzZkXPEQkAmg+jG4eZ4="
+    },
+    {
+      "path": "controller/controller-external.mjs",
+      "bytes": 321,
+      "sha256": "jW6YjQyRPHYP/DCS9lOkPuNCmnhIfiqCiiUIz/PeEw4="
+    },
+    {
+      "path": "controller/controller.api.js",
+      "bytes": 17058,
+      "sha256": "NrtmvMkq7Rqrq4JEkb9ZHHCdnrV83aluJglbDeX6NFU="
+    },
+    {
+      "path": "controller/controller.inject.js",
+      "bytes": 6408,
+      "sha256": "n8J5EdYYHV+3yBd9zDFlms1Va0/5ZEs5DdRCKdVQXug="
+    },
+    {
+      "path": "controller/controller.sw.js",
+      "bytes": 4576,
+      "sha256": "gFMJclmT0xqOVAwgxXXcwXaobn/fxrnWnM9O6PlMc20="
+    },
+    {
+      "path": "embed.css",
+      "bytes": 1205,
+      "sha256": "xWlbS/KhayRURDpfbn0tdMPUAPQKz848EH6TxS7oWNI="
+    },
+    {
+      "path": "embed.html",
+      "bytes": 880,
+      "sha256": "uUVRMRgmQjFfAT0vcwlB7pTXXgM5WUz5leUeSs1Zf2Q="
+    },
+    {
+      "path": "embed.js",
+      "bytes": 1725588,
+      "sha256": "YyxlCX1yur/5gsVUaMWpl5vxnYGSoEfl0M3G9wxMkBM="
+    },
+    {
+      "path": "embed.svg",
+      "bytes": 615,
+      "sha256": "UWnIM33/0Z6PibGolus86BehMzojPA57EYSxXQD/i6s="
+    },
+    {
+      "path": "scram/scramjet-external.mjs",
+      "bytes": 1091,
+      "sha256": "lRWuey6LtV5YbFJCYcq5gC/Gw1V4nvgHPzsjlR0h8jA="
+    },
+    {
+      "path": "scram/scramjet.js",
+      "bytes": 225759,
+      "sha256": "JHoIr4UOzL0DBblM6qgASAtcH8JVWMXmIADDTE5dQrE="
+    },
+    {
+      "path": "scram/scramjet.mjs",
+      "bytes": 226497,
+      "sha256": "ARlxJTz3Go3jIHsmh8PSst8b/5JWz5ibpiJUJqZv7v4="
+    },
+    {
+      "path": "scram/scramjet.wasm",
+      "bytes": 583678,
+      "sha256": "oo2I2KJu65fz+1wdWMuImaOiO8WSNzWyrwJtc/273o8="
+    },
+    {
+      "path": "scram/scramjet_bundled.js",
+      "bytes": 1004073,
+      "sha256": "YDxLu3yAnwjGPrnfhQxBkCq1LRY+Fu1pKTz7wScY88k="
+    },
+    {
+      "path": "scram/scramjet_bundled.mjs",
+      "bytes": 1004815,
+      "sha256": "f8iqch1JMBQ9m5CO6akNucHXugLXabdBkMNqT4fyU0k="
+    },
+    {
+      "path": "source/embed.ts",
+      "bytes": 4089,
+      "sha256": "xKDBelAuFHwI9BgyMv41IunEuIAYpXs8Z7ySoW1Voak="
+    },
+    {
+      "path": "source/protocol.ts",
+      "bytes": 2572,
+      "sha256": "Q0sarJSth6QvkBJP20FdOClWyd4u2EpmZnTUHA05fU4="
+    },
+    {
+      "path": "source/sw.js",
+      "bytes": 545,
+      "sha256": "rbLvFJzsqg9DHLWdxGFpPo1iuLFOZ7CtFtWAju5AkCc="
+    },
+    {
+      "path": "sw.js",
+      "bytes": 545,
+      "sha256": "rbLvFJzsqg9DHLWdxGFpPo1iuLFOZ7CtFtWAju5AkCc="
+    }
+  ]
+}
