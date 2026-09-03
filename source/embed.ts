@@ -20,6 +20,14 @@ interface RuntimeControllerConstructor {
   }): RuntimeController;
 }
 
+interface RuntimeLaunchGlobals {
+  __KORONA_RUNTIME_LAUNCH__?: {
+    target?: unknown;
+    wisps?: unknown;
+    apiOrigin?: unknown;
+  };
+}
+
 function report(status: Parameters<typeof runtimeStatus>[0], value: Record<string, unknown> = {}) {
   if (window.parent !== window) window.parent.postMessage(runtimeStatus(status, value), "*");
 }
@@ -30,24 +38,65 @@ function setMessage(value: string) {
 }
 
 async function activeWorker(): Promise<ServiceWorker> {
-  if (!("serviceWorker" in navigator)) throw new Error("Service workers are unavailable in this browser.");
-  await navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" });
-  await navigator.serviceWorker.ready;
-  if (!navigator.serviceWorker.controller) {
-    await new Promise<void>((resolve, reject) => {
-      const timeout = window.setTimeout(() => reject(new Error("Korona runtime worker did not control this page.")), 15_000);
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        window.clearTimeout(timeout);
-        resolve();
-      }, { once: true });
-    });
+  const container = workerContainer();
+  if (!container) throw new Error("Service workers are unavailable in this browser.");
+  const base = runtimeBase();
+  const registration = await container.register(new URL("sw.js", base).href, { scope: base.href, updateViaCache: "none" });
+  const active = registration.active;
+  if (active?.state === "activated") return active;
+  const worker = registration.installing ?? registration.waiting ?? active;
+  if (!worker) throw new Error("Korona runtime worker did not begin installing.");
+  return new Promise<ServiceWorker>((resolve, reject) => {
+    const cleanup = () => {
+      window.clearTimeout(timeout);
+      worker.removeEventListener("statechange", onStateChange);
+    };
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("Korona runtime worker did not activate."));
+    }, 15_000);
+    const onStateChange = () => {
+      if (worker.state === "activated") {
+        cleanup();
+        resolve(worker);
+      } else if (worker.state === "redundant") {
+        cleanup();
+        reject(new Error("Korona runtime worker became redundant."));
+      }
+    };
+    worker.addEventListener("statechange", onStateChange);
+  });
+}
+
+function workerContainer(): ServiceWorkerContainer | null {
+  try {
+    if (window.parent !== window && "serviceWorker" in window.parent.navigator) {
+      return window.parent.navigator.serviceWorker;
+    }
+  } catch {
+    // A cross-origin parent cannot own the portable runtime worker.
   }
-  if (!navigator.serviceWorker.controller) throw new Error("Korona runtime worker is unavailable.");
-  return navigator.serviceWorker.controller;
+  return "serviceWorker" in navigator ? navigator.serviceWorker : null;
+}
+
+function runtimeBase(): URL {
+  return new URL("./", document.baseURI);
+}
+
+function runtimePath(path: string): string {
+  return new URL(path, runtimeBase()).href;
+}
+
+function runtimePrefix(): string {
+  return new URL("f/", runtimeBase()).pathname;
+}
+
+function injectedLaunch(): RuntimeLaunchGlobals["__KORONA_RUNTIME_LAUNCH__"] {
+  return (globalThis as RuntimeLaunchGlobals).__KORONA_RUNTIME_LAUNCH__;
 }
 
 async function start() {
-  const launch = parseRuntimeLaunch(location.search);
+  const launch = parseRuntimeLaunch(location.search, injectedLaunch());
   if (!launch) throw new Error("This Korona runtime launch was invalid.");
   const frame = document.getElementById("runtime-frame") as HTMLIFrameElement | null;
   if (!frame) throw new Error("Korona runtime frame was missing.");
@@ -68,14 +117,14 @@ async function start() {
       serviceworker: worker,
       transport,
       config: {
-        prefix: "./f/",
-        scramjetPath: "./scram/scramjet.js",
-        injectPath: "./controller/controller.inject.js",
-        wasmPath: "./scram/scramjet.wasm",
+        prefix: runtimePrefix(),
+        scramjetPath: runtimePath("scram/scramjet.js"),
+        injectPath: runtimePath("controller/controller.inject.js"),
+        wasmPath: runtimePath("scram/scramjet.wasm"),
       },
     });
     await controller.wait();
-    report("ready", { source: location.origin });
+    report("ready", { source: runtimeBase().origin });
     report("progress", { count: 3 });
     const runtimeFrame = controller.createFrame(frame);
     const firstContent = window.setTimeout(() => report("error", { detail: "The requested page did not produce content in time." }), 45_000);

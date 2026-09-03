@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "buildId": "korona-cc9c6cc546b2e1be",
+  "buildId": "korona-f6101a0daae13ada",
   "files": [
     {
       "path": "LICENSE",
@@ -49,13 +49,13 @@
     },
     {
       "path": "embed.js",
-      "bytes": 1726035,
-      "sha256": "fCXXLRd7ApWSQN89OEzSN7XDMolwH3I2E5rS07vYKwM="
+      "bytes": 1726617,
+      "sha256": "UTjxlDdPN7IJ/FHnkXQjsJpSaLzYt7lnqTY1Z+fDHdc="
     },
     {
       "path": "embed.svg",
-      "bytes": 615,
-      "sha256": "UWnIM33/0Z6PibGolus86BehMzojPA57EYSxXQD/i6s="
+      "bytes": 3022,
+      "sha256": "6LUeTToqxmSGGvNAbpm1xW8ntOM0JySnm1oXQ8woj6U="
     },
     {
       "path": "scram/scramjet-external.mjs",
@@ -89,13 +89,13 @@
     },
     {
       "path": "source/embed.ts",
-      "bytes": 4089,
-      "sha256": "xKDBelAuFHwI9BgyMv41IunEuIAYpXs8Z7ySoW1Voak="
+      "bytes": 5500,
+      "sha256": "haIM55aIM6tclPLYiJ5n/w3T+HffCckmDiHNbImV1qc="
     },
     {
       "path": "source/protocol.ts",
-      "bytes": 2572,
-      "sha256": "Q0sarJSth6QvkBJP20FdOClWyd4u2EpmZnTUHA05fU4="
+      "bytes": 2876,
+      "sha256": "wguGX6NYPur8RvxakT7rrmn2KtsySeLF42Hf5/Q2eDo="
     },
     {
       "path": "source/sw.js",

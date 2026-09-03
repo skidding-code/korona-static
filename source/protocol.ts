@@ -7,12 +7,18 @@ export interface RuntimeLaunch {
   apiOrigin: string;
 }
 
-export function parseRuntimeLaunch(search: string): RuntimeLaunch | null {
+export interface RuntimeLaunchInput {
+  target?: unknown;
+  wisps?: unknown;
+  apiOrigin?: unknown;
+}
+
+export function parseRuntimeLaunch(search: string, injected?: RuntimeLaunchInput): RuntimeLaunch | null {
   if (search.length > 16_384) return null;
   const params = new URLSearchParams(search);
-  const target = decodeString(params.get("target"));
-  const wisps = decodeJson(params.get("wisps"));
-  const apiOrigin = decodeString(params.get("api"));
+  const target = typeof injected?.target === "string" ? injected.target : decodeString(params.get("target"));
+  const wisps = Array.isArray(injected?.wisps) ? injected.wisps : decodeJson(params.get("wisps"));
+  const apiOrigin = typeof injected?.apiOrigin === "string" ? injected.apiOrigin : decodeString(params.get("api"));
   if (!target || !apiOrigin || !Array.isArray(wisps)) return null;
   try {
     const destination = new URL(target);
