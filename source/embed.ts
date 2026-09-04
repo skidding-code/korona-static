@@ -110,7 +110,7 @@ async function start() {
   setMessage("Selecting a relay…");
   report("progress", { count: 1 });
   const resolver = new EmbeddedWispResolver({ endpoints: launch.wisps });
-  const { endpoint, transport } = await selectQualifiedTransport(resolver, launch.target, launch.wisps.length);
+  const { endpoint, transport } = await selectQualifiedTransport(resolver, launch.target);
   setMessage("Starting secure browser runtime…");
   report("progress", { count: 2 });
   const worker = await activeWorker();
@@ -149,23 +149,17 @@ async function start() {
 async function selectQualifiedTransport(
   resolver: EmbeddedWispResolver,
   target: string,
-  candidateCount: number,
 ): Promise<{ endpoint: string; transport: ReadyRuntimeTransport }> {
   let lastEndpoint = "";
   let lastError: unknown = new Error("Korona runtime could not select a relay.");
-  const attempts = Math.max(1, candidateCount);
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    let endpoint = "";
+  const candidates = resolver.candidates();
+  if (candidates.length === 0) throw new Error("no Wisp endpoints are currently available");
+  for (const endpoint of candidates) {
     try {
-      endpoint = (await resolver.resolve()).url;
       const transport = await createReadyTransport(endpoint);
       await qualifyReadyTransport(transport, target);
       return { endpoint, transport };
     } catch (error) {
-      if (!endpoint) {
-        if (lastEndpoint) throw new WispForwardingFailure(lastEndpoint, error);
-        throw error;
-      }
       resolver.reject(endpoint);
       lastEndpoint = endpoint;
       lastError = error;
