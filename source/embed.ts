@@ -1,6 +1,6 @@
 import { EmbeddedWispResolver } from "../src/core/singlefile/wisp-resolver";
 import { parseRuntimeLaunch, runtimeStatus } from "./protocol";
-import { createReadyTransport, type ReadyRuntimeTransport } from "./transport";
+import { createReadyTransport, qualifyReadyTransport, type ReadyRuntimeTransport } from "./transport";
 
 interface RuntimeFrame {
   element: HTMLIFrameElement;
@@ -26,6 +26,12 @@ interface RuntimeLaunchGlobals {
     wisps?: unknown;
     apiOrigin?: unknown;
   };
+}
+
+class WispForwardingFailure extends Error {
+  constructor(readonly endpoint: string, cause: unknown) {
+    super(cause instanceof Error ? cause.message : "Korona runtime forwarding failed.");
+  }
 }
 
 function report(status: Parameters<typeof runtimeStatus>[0], value: Record<string, unknown> = {}) {
@@ -103,17 +109,9 @@ async function start() {
   setMessage("Selecting a relay…");
   report("progress", { count: 1 });
   const resolver = new EmbeddedWispResolver({ endpoints: launch.wisps });
-  const endpoint = (await resolver.resolve()).url;
+  const { endpoint, transport } = await selectQualifiedTransport(resolver, launch.target, launch.wisps.length);
   setMessage("Starting secure browser runtime…");
   report("progress", { count: 2 });
-  let transport: ReadyRuntimeTransport;
-  try {
-    transport = await createReadyTransport(endpoint);
-  } catch (error) {
-    resolver.reject(endpoint);
-    report("wisp-failed", { endpoint });
-    throw error;
-  }
   const worker = await activeWorker();
   const controllerRuntime = (globalThis as { $scramjetController?: { Controller?: RuntimeControllerConstructor } }).$scramjetController;
   if (!controllerRuntime?.Controller) throw new Error("Korona relay controller did not load.");
@@ -141,7 +139,40 @@ async function start() {
   runtimeFrame.go(launch.target);
 }
 
+async function selectQualifiedTransport(
+  resolver: EmbeddedWispResolver,
+  target: string,
+  candidateCount: number,
+): Promise<{ endpoint: string; transport: ReadyRuntimeTransport }> {
+  let lastEndpoint = "";
+  let lastError: unknown = new Error("Korona runtime could not select a relay.");
+  const attempts = Math.max(1, candidateCount);
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    let endpoint = "";
+    try {
+      endpoint = (await resolver.resolve()).url;
+      const transport = await createReadyTransport(endpoint);
+      await qualifyReadyTransport(transport, target);
+      return { endpoint, transport };
+    } catch (error) {
+      if (!endpoint) {
+        if (lastEndpoint) throw new WispForwardingFailure(lastEndpoint, error);
+        throw error;
+      }
+      resolver.reject(endpoint);
+      lastEndpoint = endpoint;
+      lastError = error;
+    }
+  }
+  throw new WispForwardingFailure(lastEndpoint, lastError);
+}
+
 void start().catch((error: unknown) => {
+  if (error instanceof WispForwardingFailure) {
+    setMessage(error.message);
+    report("wisp-failed", { endpoint: error.endpoint });
+    return;
+  }
   const detail = error instanceof Error ? error.message : "Korona runtime failed.";
   setMessage(detail);
   report("error", { detail });
