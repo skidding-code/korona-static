@@ -19,6 +19,7 @@ export const {
 	flagEnabled,
 	getOwnPropertyDescriptorHandler,
 	getRewriter,
+	getScriptBlockTypeString,
 	htmlRules,
 	isArchiveMimeType,
 	isAudioOrVideoMimeType,

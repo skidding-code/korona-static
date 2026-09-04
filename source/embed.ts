@@ -1,6 +1,6 @@
-import EpoxyTransport from "@mercuryworkshop/epoxy-transport";
 import { EmbeddedWispResolver } from "../src/core/singlefile/wisp-resolver";
 import { parseRuntimeLaunch, runtimeStatus } from "./protocol";
+import { createReadyTransport, type ReadyRuntimeTransport } from "./transport";
 
 interface RuntimeFrame {
   element: HTMLIFrameElement;
@@ -15,7 +15,7 @@ interface RuntimeController {
 interface RuntimeControllerConstructor {
   new (options: {
     serviceworker: ServiceWorker;
-    transport: EpoxyTransport;
+    transport: ReadyRuntimeTransport;
     config: { prefix: string; scramjetPath: string; injectPath: string; wasmPath: string };
   }): RuntimeController;
 }
@@ -108,8 +108,7 @@ async function start() {
     endpoint = (await resolver.resolve()).url;
     setMessage("Starting secure browser runtime…");
     report("progress", { count: 2 });
-    const transport = new EpoxyTransport({ wisp: endpoint, wisp_v2: true });
-    await transport.init();
+    const transport = await createReadyTransport(endpoint);
     const worker = await activeWorker();
     const controllerRuntime = (globalThis as { $scramjetController?: { Controller?: RuntimeControllerConstructor } }).$scramjetController;
     if (!controllerRuntime?.Controller) throw new Error("Korona relay controller did not load.");
