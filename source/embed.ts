@@ -1,5 +1,6 @@
 import { EmbeddedWispResolver } from "../src/core/singlefile/wisp-resolver";
 import { parseRuntimeLaunch, runtimeStatus } from "./protocol";
+import { failUnproductiveRelay } from "./relay-health";
 import { createReadyTransport, qualifyReadyTransport, type ReadyRuntimeTransport } from "./transport";
 
 interface RuntimeFrame {
@@ -129,8 +130,14 @@ async function start() {
   report("ready", { source: runtimeBase().origin });
   report("progress", { count: 3 });
   const runtimeFrame = controller.createFrame(frame);
-  const firstContent = window.setTimeout(() => report("error", { detail: "The requested page did not produce content in time." }), 45_000);
+  let contentTimedOut = false;
+  const firstContent = window.setTimeout(() => {
+    contentTimedOut = true;
+    setMessage("Trying another relay…");
+    failUnproductiveRelay(resolver, endpoint, report);
+  }, 45_000);
   frame.addEventListener("load", () => {
+    if (contentTimedOut) return;
     window.clearTimeout(firstContent);
     resolver.confirm(endpoint);
     document.getElementById("runtime-stage")?.classList.add("ready");
