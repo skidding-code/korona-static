@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "buildId": "korona-8e458c04d29f542f",
+  "buildId": "korona-a33664d6f764c233",
   "files": [
     {
       "path": "LICENSE",
@@ -29,8 +29,8 @@
     },
     {
       "path": "controller/controller.api.js",
-      "bytes": 17086,
-      "sha256": "m8OLxtznBOv3H9fEGBUb9xkrCmwQ4V8QN8d+FGwWPJE="
+      "bytes": 17101,
+      "sha256": "HSZhd+TOJumvVq9bXgasKJAhmsfd4e1BbWnvIYsh/bs="
     },
     {
       "path": "controller/controller.inject.js",
