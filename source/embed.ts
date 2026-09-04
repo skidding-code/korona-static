@@ -103,44 +103,42 @@ async function start() {
   setMessage("Selecting a relay…");
   report("progress", { count: 1 });
   const resolver = new EmbeddedWispResolver({ endpoints: launch.wisps });
-  let endpoint = "";
+  const endpoint = (await resolver.resolve()).url;
+  setMessage("Starting secure browser runtime…");
+  report("progress", { count: 2 });
+  let transport: ReadyRuntimeTransport;
   try {
-    endpoint = (await resolver.resolve()).url;
-    setMessage("Starting secure browser runtime…");
-    report("progress", { count: 2 });
-    const transport = await createReadyTransport(endpoint);
-    const worker = await activeWorker();
-    const controllerRuntime = (globalThis as { $scramjetController?: { Controller?: RuntimeControllerConstructor } }).$scramjetController;
-    if (!controllerRuntime?.Controller) throw new Error("Korona relay controller did not load.");
-    const controller = new controllerRuntime.Controller({
-      serviceworker: worker,
-      transport,
-      config: {
-        prefix: runtimePrefix(),
-        scramjetPath: runtimePath("scram/scramjet.js"),
-        injectPath: runtimePath("controller/controller.inject.js"),
-        wasmPath: runtimePath("scram/scramjet.wasm"),
-      },
-    });
-    await controller.wait();
-    report("ready", { source: runtimeBase().origin });
-    report("progress", { count: 3 });
-    const runtimeFrame = controller.createFrame(frame);
-    const firstContent = window.setTimeout(() => report("error", { detail: "The requested page did not produce content in time." }), 45_000);
-    frame.addEventListener("load", () => {
-      window.clearTimeout(firstContent);
-      resolver.confirm(endpoint);
-      document.getElementById("runtime-stage")?.classList.add("ready");
-      report("first-content", { url: launch.target });
-    }, { once: true });
-    runtimeFrame.go(launch.target);
+    transport = await createReadyTransport(endpoint);
   } catch (error) {
-    if (endpoint) {
-      resolver.reject(endpoint);
-      report("wisp-failed", { endpoint });
-    }
+    resolver.reject(endpoint);
+    report("wisp-failed", { endpoint });
     throw error;
   }
+  const worker = await activeWorker();
+  const controllerRuntime = (globalThis as { $scramjetController?: { Controller?: RuntimeControllerConstructor } }).$scramjetController;
+  if (!controllerRuntime?.Controller) throw new Error("Korona relay controller did not load.");
+  const controller = new controllerRuntime.Controller({
+    serviceworker: worker,
+    transport,
+    config: {
+      prefix: runtimePrefix(),
+      scramjetPath: runtimePath("scram/scramjet.js"),
+      injectPath: runtimePath("controller/controller.inject.js"),
+      wasmPath: runtimePath("scram/scramjet.wasm"),
+    },
+  });
+  await controller.wait();
+  report("ready", { source: runtimeBase().origin });
+  report("progress", { count: 3 });
+  const runtimeFrame = controller.createFrame(frame);
+  const firstContent = window.setTimeout(() => report("error", { detail: "The requested page did not produce content in time." }), 45_000);
+  frame.addEventListener("load", () => {
+    window.clearTimeout(firstContent);
+    resolver.confirm(endpoint);
+    document.getElementById("runtime-stage")?.classList.add("ready");
+    report("first-content", { url: launch.target });
+  }, { once: true });
+  runtimeFrame.go(launch.target);
 }
 
 void start().catch((error: unknown) => {

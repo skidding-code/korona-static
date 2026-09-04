@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "buildId": "korona-cadd57cada7417de",
+  "buildId": "korona-374b48f58c81f81b",
   "files": [
     {
       "path": "LICENSE",
@@ -54,8 +54,8 @@
     },
     {
       "path": "embed.js",
-      "bytes": 9782,
-      "sha256": "Qt7nl+1I00k/IFDJkzNZAns6scBEFXFMRasQwjnUkhk="
+      "bytes": 9773,
+      "sha256": "h/YIJz1XE7E3y9EgvhDlzP7z0vFsbYhrTB4ORhf8CTs="
     },
     {
       "path": "embed.svg",
@@ -94,8 +94,8 @@
     },
     {
       "path": "source/embed.ts",
-      "bytes": 5479,
-      "sha256": "nId1yDx59Dj/PNnuhpVab7zurjdh70Mv0DHCFcBP8II="
+      "bytes": 5412,
+      "sha256": "KzdK/ZevQupmONYH4XcC7iNXWMA53Su7oK225P7jXb4="
     },
     {
       "path": "source/protocol.ts",
