@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "buildId": "korona-a33664d6f764c233",
+  "buildId": "korona-705bf8e0f4a447b8",
   "files": [
     {
       "path": "LICENSE",
@@ -104,13 +104,13 @@
     },
     {
       "path": "source/sw.js",
-      "bytes": 1380,
-      "sha256": "TY7qulumJ35PtmZ7LYuLs+2sIO4C6dqvJWNm6qYLNFo="
+      "bytes": 1508,
+      "sha256": "TtAmZ4S5eeUDWFXAsjcgB8UJIUOLZuKrpgHmfvalgtA="
     },
     {
       "path": "sw.js",
-      "bytes": 1380,
-      "sha256": "TY7qulumJ35PtmZ7LYuLs+2sIO4C6dqvJWNm6qYLNFo="
+      "bytes": 1508,
+      "sha256": "TtAmZ4S5eeUDWFXAsjcgB8UJIUOLZuKrpgHmfvalgtA="
     }
   ]
 }

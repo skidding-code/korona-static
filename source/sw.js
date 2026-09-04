@@ -1,6 +1,8 @@
 const BASE = new URL("./", self.location).pathname;
 
-importScripts(`${BASE}scram/scramjet.js`, `${BASE}controller/controller.sw.js`);
+// The browser client bundle relies on DOM-only APIs such as object URLs. The
+// controller's worker bundle is the service-worker-safe half of the runtime.
+importScripts(`${BASE}controller/controller.sw.js`);
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
