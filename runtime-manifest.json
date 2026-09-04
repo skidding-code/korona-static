@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "buildId": "korona-9c5cbcd92c5e595c",
+  "buildId": "korona-eff601f67df1286c",
   "files": [
     {
       "path": "LICENSE",
@@ -55,7 +55,7 @@
     {
       "path": "embed.js",
       "bytes": 11816,
-      "sha256": "BgDSzPMKruYckqRds/XNpPcTWeoq7/Eq58xmKCLfRqw="
+      "sha256": "ciOnRr4OcYcxrlbUzvKGotAgfE4JdGbNDcbvl+0xV2g="
     },
     {
       "path": "embed.svg",
