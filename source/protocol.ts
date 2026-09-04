@@ -18,15 +18,20 @@ export function parseRuntimeLaunch(search: string, injected?: RuntimeLaunchInput
   const params = new URLSearchParams(search);
   const target = typeof injected?.target === "string" ? injected.target : decodeString(params.get("target"));
   const wisps = Array.isArray(injected?.wisps) ? injected.wisps : decodeJson(params.get("wisps"));
-  const apiOrigin = typeof injected?.apiOrigin === "string" ? injected.apiOrigin : decodeString(params.get("api"));
-  if (!target || !apiOrigin || !Array.isArray(wisps)) return null;
+  const suppliedApiOrigin = typeof injected?.apiOrigin === "string" ? injected.apiOrigin : decodeString(params.get("api"));
+  if (!target || !Array.isArray(wisps)) return null;
   try {
     const destination = new URL(target);
-    const api = new URL(apiOrigin);
-    if (!["https:", "http:"].includes(destination.protocol) || api.protocol !== "https:") return null;
+    if (!["https:", "http:"].includes(destination.protocol)) return null;
+    let apiOrigin = "";
+    if (suppliedApiOrigin) {
+      const api = new URL(suppliedApiOrigin);
+      if (api.protocol !== "https:") return null;
+      apiOrigin = api.href.replace(/\/$/, "");
+    }
     const endpoints = parseEmbeddedWisps(wisps.filter((value): value is string => typeof value === "string").join("\n"));
     if (endpoints.length === 0 || endpoints.length > 64) return null;
-    return { target: destination.href, wisps: endpoints, apiOrigin: api.href.replace(/\/$/, "") };
+    return { target: destination.href, wisps: endpoints, apiOrigin };
   } catch {
     return null;
   }
